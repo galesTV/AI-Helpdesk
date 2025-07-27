@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatInterface } from './components/ChatInterface';
 import { DocumentManager } from './components/DocumentManager';
 import { Dashboard } from './components/Dashboard';
 import { FAQManager } from './components/FAQManager';
 
-export type ViewType = 'chat' | 'documents' | 'dashboard' | 'faq';
+import { ViewType } from './types';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('chat');
