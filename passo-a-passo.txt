@@ -1,0 +1,27 @@
+/SRC
+App.tsx
+Index.css (tailwindcss)
+Main.tsx
+
+/SRC/COMPONENTS
+Sidebar.tsx
+ChatInterface.tsx
+ChatMessage.tsx
+TypingIndicator.tsx
+DocumentManager.tsx
+Dashboard.tsx
+FAQManager.tsx
+LanguageSelector.tsx
+
+OUTROS ARQUIVOS
+.gitignore
+eslint.config.ts
+index.html
+package-lock.json
+package.json
+postcss.config.ts
+tailwind.config.ts
+ts.config.app.json
+ts.config.json
+ts.config.node.json
+vite.config.ts
