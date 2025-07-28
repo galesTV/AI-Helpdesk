@@ -39,3 +39,9 @@ export interface FAQ {
   lastUpdated: Date;
   isPublished: boolean;
 }
+
+export interface AppContextType {
+  selectedLanguage: Language;
+  setSelectedLanguage: (language: Language) => void;
+  translations: Record<string, string>;
+}

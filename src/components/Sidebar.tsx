@@ -7,7 +7,8 @@ import {
   X,
   Bot
 } from 'lucide-react';
-import { ViewType } from '../types/index';
+import { useAppContext } from '../contexts/AppContext';
+import type { ViewType } from '../types';
 
 interface SidebarProps {
   currentView: ViewType;
@@ -24,6 +25,8 @@ const navigation = [
 ];
 
 export function Sidebar({ currentView, setCurrentView, isOpen, setIsOpen }: SidebarProps) {
+  const { translations } = useAppContext();
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -59,9 +62,11 @@ export function Sidebar({ currentView, setCurrentView, isOpen, setIsOpen }: Side
         
         <nav className="mt-6 px-3">
           <ul className="space-y-2">
-            {navigation.map((item) => {
+            {navigation.map((item, index) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;
+              const navKeys = ['nav.chat', 'nav.documents', 'nav.faq', 'nav.dashboard'];
+              const translatedName = translations[navKeys[index]] || item.name;
               
               return (
                 <li key={item.id}>
@@ -79,7 +84,7 @@ export function Sidebar({ currentView, setCurrentView, isOpen, setIsOpen }: Side
                     `}
                   >
                     <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
-                    {item.name}
+                    {translatedName}
                   </button>
                 </li>
               );
@@ -89,10 +94,10 @@ export function Sidebar({ currentView, setCurrentView, isOpen, setIsOpen }: Side
         
         <div className="absolute bottom-6 left-3 right-3">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
-            <h3 className="text-sm font-medium text-gray-900 mb-1">System Status</h3>
+            <h3 className="text-sm font-medium text-gray-900 mb-1">{translations['nav.systemStatus']}</h3>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-gray-600">AI Engine Online</span>
+              <span className="text-xs text-gray-600">{translations['nav.aiEngineOnline']}</span>
             </div>
           </div>
         </div>

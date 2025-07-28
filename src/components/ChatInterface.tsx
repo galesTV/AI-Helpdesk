@@ -1,10 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, MoreVertical, Globe } from 'lucide-react';
+import { useAppContext } from '../contexts/AppContext';
+import { sendMessageToChatGPT, ChatGPTMessage } from '../services/openai';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { LanguageSelector } from './LanguageSelector';
 
-import { Message, Language, LanguageConfig } from '../types';
+export interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+  status?: 'sending' | 'sent' | 'read';
+  attachments?: string[];
+  relatedDocs?: string[];
+}
+
+export type Language = 'en' | 'es' | 'pt' | 'fr' | 'de' | 'it' | 'zh' | 'ja';
+
+export interface LanguageConfig {
+  code: Language;
+  name: string;
+  flag: string;
+}
 
 export const languages: LanguageConfig[] = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -187,11 +205,12 @@ const initialGreeting: Record<Language, string> = {
 };
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const { selectedLanguage, setSelectedLanguage, translations } = useAppContext();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<ChatGPTMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -204,14 +223,16 @@ export function ChatInterface() {
 
   // Update initial message when language changes
   useEffect(() => {
-    setMessages([{
+    const initialMessage: Message = {
       id: '1',
-      content: initialGreeting[selectedLanguage],
+      content: translations['chat.initialGreeting'],
       sender: 'bot',
       timestamp: new Date(Date.now() - 1000 * 60 * 5),
       status: 'read'
-    }]);
-  }, [selectedLanguage]);
+    };
+    setMessages([initialMessage]);
+    setConversationHistory([]);
+  }, [selectedLanguage, translations]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -228,20 +249,48 @@ export function ChatInterface() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Send message to ChatGPT
+      const response = await sendMessageToChatGPT(
+        inputValue,
+        conversationHistory,
+        selectedLanguage
+      );
+
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: mockResponses[selectedLanguage][Math.floor(Math.random() * mockResponses[selectedLanguage].length)] + `${followUpText[selectedLanguage]}`,
+
+        content: response.content,
         sender: 'bot',
         timestamp: new Date(),
         status: 'read',
-        relatedDocs: relatedDocsText[selectedLanguage]
+        relatedDocs: response.relatedDocs
       };
 
       setIsTyping(false);
       setMessages(prev => [...prev, botResponse]);
-    }, 1500 + Math.random() * 2000);
+
+      // Update conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: inputValue },
+        { role: 'assistant', content: response.content }
+      ]);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setIsTyping(false);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: 'I apologize, but I\'m having trouble processing your request right now. Please try again later.',
+        sender: 'bot',
+        timestamp: new Date(),
+        status: 'read'
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -257,8 +306,8 @@ export function ChatInterface() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Technical Support Chat</h1>
-            <p className="text-sm text-gray-500">Get instant help with your technical questions</p>
+            <h1 className="text-xl font-semibold text-gray-900">{translations['chat.title']}</h1>
+            <p className="text-sm text-gray-500">{translations['chat.subtitle']}</p>
           </div>
           <div className="flex items-center space-x-2">
             <div className="relative">
@@ -274,8 +323,6 @@ export function ChatInterface() {
               
               {showLanguageSelector && (
                 <LanguageSelector
-                  selectedLanguage={selectedLanguage}
-                  onLanguageChange={setSelectedLanguage}
                   onClose={() => setShowLanguageSelector(false)}
                 />
               )}
@@ -307,7 +354,7 @@ export function ChatInterface() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={placeholderText[selectedLanguage]}
+              placeholder={translations['chat.placeholder']}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={1}
               style={{ minHeight: '48px', maxHeight: '120px' }}
@@ -322,7 +369,7 @@ export function ChatInterface() {
           </button>
         </div>
         <div className="mt-2 text-xs text-gray-500">
-          Press Enter to send, Shift+Enter for new line
+          {translations['chat.sendHint']}
         </div>
       </div>
     </div>

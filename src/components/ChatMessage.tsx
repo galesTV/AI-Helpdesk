@@ -1,5 +1,5 @@
 import { Bot, User, CheckCheck, Clock, FileText } from 'lucide-react';
-import { Message } from '../types';
+import type { Message } from './ChatInterface';
 
 interface ChatMessageProps {
   message: Message;

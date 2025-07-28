@@ -1,19 +1,25 @@
-/SRC
+/SRC ✔️
 App.tsx ✔️
 Index.css (tailwindcss) ✔️
 Main.tsx ✔️
 
-/SRC/COMPONENTS
+/SRC/COMPONENTS ✔️
 Sidebar.tsx ✔️
 ChatInterface.tsx ✔️
 ChatMessage.tsx ✔️
 TypingIndicator.tsx ✔️
-DocumentManager.tsx
-Dashboard.tsx
-FAQManager.tsx
-LanguageSelector.tsx
+DocumentManager.tsx ✔️
+Dashboard.tsx ✔️
+FAQManager.tsx ✔️
+LanguageSelector.tsx ✔️
 
-/SRC/TYPES (Adicionado para organização)
+SRC/CONTEXTS (Conexão)
+AppContext.tsx
+
+SRC/SERVICES (Lógica do chat)
+openai.ts
+
+/SRC/TYPES (Adicionado para organização) ✔️
 index.ts ✔️
 
 OUTROS ARQUIVOS
