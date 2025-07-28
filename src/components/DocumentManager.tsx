@@ -57,7 +57,7 @@ const mockDocuments: Document[] = [
 
 export function DocumentManager() {
   const { translations } = useAppContext();
-  const [documents, setDocuments] = useState<Document[]>(mockDocuments);
+  const [documents] = useState<Document[]>(mockDocuments);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [dragOver, setDragOver] = useState(false);
@@ -95,7 +95,7 @@ export function DocumentManager() {
     }
   };
 
-  const getTypeIcon = (type: Document['type']) => {
+  const getTypeIcon = (_type: Document['type']) => {
     return <FileText className="w-5 h-5 text-gray-400" />;
   };
 
