@@ -5,9 +5,9 @@ Main.tsx ✔️
 
 /SRC/COMPONENTS
 Sidebar.tsx ✔️
-ChatInterface.tsx
-ChatMessage.tsx
-TypingIndicator.tsx
+ChatInterface.tsx ✔️
+ChatMessage.tsx ✔️
+TypingIndicator.tsx ✔️
 DocumentManager.tsx
 Dashboard.tsx
 FAQManager.tsx
